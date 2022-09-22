@@ -1,0 +1,7 @@
+node_modules
+.env
+/lib
+
+coverage
+.DS_Store
+package-lock.json

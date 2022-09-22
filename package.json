@@ -1,0 +1,47 @@
+{
+  "name": "@transak/transak-stellar",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Transak/transak-stellar"
+  },
+  "scripts": {
+    "test": "jest -c jest.config.js",
+    "restricted-publish": "npm publish --access restricted",
+    "build": "npx tsc",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "dotenv": "10.0.0",
+    "ethers": "^5.7.1",
+    "stellar-sdk": "^10.3.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.0.0",
+    "jest": "^28.0.0",
+    "prettier": "^2.7.1",
+    "ts-jest": "^28.0.8",
+    "ts-node": "^10.4.0",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^4.5.2"
+  },
+  "files": [
+    "/lib/**/*"
+  ]
+}
