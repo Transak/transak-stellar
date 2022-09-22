@@ -52,7 +52,7 @@ const keys = {
 
 const runtime = { transactionHash: '' };
 
-describe('Hedera module', () => {
+describe('Stellar module', () => {
   
 
   test(

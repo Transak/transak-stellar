@@ -1,2 +1,2 @@
-# hedera-transak
-This repository contains the Hedera Transak integration.
+# transak-stellar
+This repository contains the Stellar Transak integration.
