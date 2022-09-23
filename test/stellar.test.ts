@@ -16,7 +16,7 @@ const testData = {
   crypto: 'HBAR',
   amount: 0.005,
   decimals: 7,
-  tokenId: '', // '0.0.48220530'
+  assetCode: 'BTC', // undefined
 };
 
 const keys = {
@@ -62,9 +62,8 @@ describe('Stellar module', () => {
 
       const result = await StellarLib.getBalance(
         network,
-        decimals,
         accountId,
-        // tokenId, // token Id
+        assetCode
       );
 
       console.log({ result });
@@ -73,7 +72,7 @@ describe('Stellar module', () => {
     mainTimeout,
   );
 
-  test(
+  test.skip(
     'should isValidWalletAddress',
     async function () {
       const result = await StellarLib.isValidWalletAddress(testData.toWalletAddress);
@@ -84,7 +83,7 @@ describe('Stellar module', () => {
     mainTimeout * 3,
   );
 
-  test(
+  test.skip(
     'should sendTransaction',
     async function () {
       const { toWalletAddress: to, network, amount, decimals, accountId, privateKey, tokenId } = testData;
@@ -108,7 +107,7 @@ describe('Stellar module', () => {
     mainTimeout * 3,
   );
 
-  test(
+  test.skip(
     'should getTransaction',
     async function () {
       const { network } = testData;

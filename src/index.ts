@@ -54,34 +54,30 @@ async function getClient(network: string): Promise<any> {
 /**
  * Get the balance of the transak wallet address
  * @param network
- * @param decimals
  * @param accountId
+ * @param assetCode - optional asset code ( if not provided, it will return the balance of native asset)
  * @returns
  */
-async function getBalance(network: string, decimals: number, accountId: string, tokenId?: string): Promise<number> {
+async function getBalance(network: string, accountId: string, assetCode?: string): Promise<number> {
   const server = await getClient(network);
 
   const account = await server.loadAccount(accountId);
 
-  account.balances.forEach(function (asset: any) {
-    console.log('Type:', asset.asset_type, ', Balance:', asset.balance);
+  const selectedAsset = account.balances.find(function (asset: any) {
+    if (!assetCode || assetCode === 'XLM') {
+      return asset.asset_type === 'native';
+    }
+    return asset.asset_code === assetCode;
   });
 
-  // if token id is present then return the token balance
-  // if (tokenId) {
-  //   return Number(_toDecimal(balance.tokens?.get(tokenId)?.toString() || '0', decimals));
-  // }
-
-  // else return the hbar balance
-  return Number(toDecimal(account.balances[0].balance + '', decimals));
+  // return balance
+  return Number(selectedAsset.balance);
 }
 
 /**
  * Get the transaction details by transaction id
  * @param txnId
  * @param network
- * @param privateKey
- * @param accountId
  * @returns
  */
 async function getTransaction(txnId: string, network: string): Promise<GetTransactionResult | null> {
