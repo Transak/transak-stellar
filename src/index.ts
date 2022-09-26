@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { networks } from './config';
-import { toDecimal, toCrypto } from './utils';
-// import { Client, TransferTransaction, AccountBalanceQuery, Hbar, TransactionResponse } from '@hashgraph/sdk';
+import { toDecimal } from './utils';
 import StellarSdk from 'stellar-sdk';
 import { Network, GetTransactionResult, SendTransactionResult, SendTransactionParams } from './types'; //
 
@@ -22,7 +21,7 @@ const isValidWalletAddress = (address: string) => {
 };
 
 /**
- *
+ * Gets the transaction link
  * @param txId
  * @param network
  * @returns
@@ -55,19 +54,26 @@ async function getClient(network: string): Promise<any> {
  * Get the balance of the transak wallet address
  * @param network
  * @param accountId
- * @param assetCode - optional asset code ( if not provided, it will return the balance of native asset)
+ * @param assetCode - optional assetCode ( if not provided, it will return the balance of native asset)
+ * @param assetIssuer - optional assetIssuer ( if not provided, it will return the balance of native asset)
  * @returns
  */
-async function getBalance(network: string, accountId: string, assetCode?: string): Promise<number> {
+async function getBalance(
+  network: string,
+  accountId: string,
+  assetCode?: string,
+  assetIssuer?: string,
+): Promise<number> {
   const server = await getClient(network);
 
   const account = await server.loadAccount(accountId);
 
   const selectedAsset = account.balances.find(function (asset: any) {
-    if (!assetCode || assetCode === 'XLM') {
-      return asset.asset_type === 'native';
+    if (assetCode && assetIssuer && assetCode !== 'XLM') {
+      return asset.asset_code === assetCode && asset.asset_issuer === assetIssuer;
     }
-    return asset.asset_code === assetCode;
+
+    return asset.asset_type === 'native';
   });
 
   // return balance
@@ -128,15 +134,20 @@ async function sendTransaction({
   amount,
   network,
   privateKey,
-  decimals,
-  tokenId,
+  assetCode,
+  assetIssuer,
 }: SendTransactionParams): Promise<SendTransactionResult> {
   const server = await getClient(network);
   const config = getNetwork(network);
 
+  // 1. get Keys from private key
   const sourceKeys = StellarSdk.Keypair.fromSecret(privateKey);
 
-  const sourceAccount = server.loadAccount(sourceKeys.publicKey());
+  // 2. get Transak Account from sourceKeys
+  const sourceAccount = await server.loadAccount(sourceKeys.publicKey());
+
+  // if assetCode is present set the Asset or XLM is transacted.
+  const asset = assetCode && assetIssuer ? new StellarSdk.Asset(assetCode, assetIssuer) : StellarSdk.Asset.native();
 
   // Start building the transaction.
   const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
@@ -146,15 +157,14 @@ async function sendTransaction({
     .addOperation(
       StellarSdk.Operation.payment({
         destination: to,
-        // Stellar allows transaction in many currencies, you must
-        // specify the asset type. The special "native" asset represents Lumens.
-        asset: StellarSdk.Asset.native(),
+        asset: asset,
         amount: amount.toString(),
       }),
     )
     .addMemo(StellarSdk.Memo.text('Transaction by Transak'))
     .setTimeout(180) // Wait a maximum of three minutes for the transaction
     .build();
+
   // Sign the transaction to prove you are actually the person sending it.
   transaction.sign(sourceKeys);
 

@@ -1,6 +1,3 @@
-// import { TransactionResponse, TransactionRecord, TransactionReceipt } from '@hashgraph/sdk';
-
-
 export type Network = {
   networkName: string;
   transactionLink: (arg0: string) => string;
@@ -33,10 +30,10 @@ export type SendTransactionParams = {
   to: string; // to wallet address
   amount: number;
   network: string;
-  decimals: number;
-  accountId: string; 
+  accountId: string;
   privateKey: string;
-  tokenId?: string;
+  assetCode?: string;
+  assetIssuer?: string;
 };
 
 export type SendTransactionResult = {
@@ -48,7 +45,6 @@ export type SendTransactionResult = {
     gasCostCryptoCurrency: string;
     gasCostInCrypto: number;
     gasLimit: number;
-   
     network: string;
     nonce: number;
     to: string;

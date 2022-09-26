@@ -13,10 +13,10 @@ const testData = {
   privateKey: process.env.MY_PRIVATE_KEY || ' ',
   toWalletAddress: process.env.TOWALLETADDRESS || '',
   network: process.env.NETWORK || '',
-  crypto: 'HBAR',
-  amount: 0.005,
+  amount: 1,
   decimals: 7,
-  assetCode: 'BTC', // undefined
+  assetCode: 'USDC', // undefined
+  assetIssuer: 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5', // undefined
 };
 
 const keys = {
@@ -32,9 +32,7 @@ const keys = {
     'transactionLink',
   ],
   getTransactionResponse: [
-    // 'amount',
     'date',
-    // 'from',
     'gasCostCryptoCurrency',
     'gasCostInCrypto',
     'gasLimit',
@@ -53,18 +51,12 @@ const keys = {
 const runtime = { transactionHash: '' };
 
 describe('Stellar module', () => {
-  
-
   test(
     'should getBalance',
     async function () {
-      const { network, decimals, accountId, tokenId } = testData;
+      const { network, accountId, assetCode, assetIssuer } = testData;
 
-      const result = await StellarLib.getBalance(
-        network,
-        accountId,
-        assetCode
-      );
+      const result = await StellarLib.getBalance(network, accountId, assetCode, assetIssuer);
 
       console.log({ result });
       expect(typeof result).toBe('number');
@@ -72,7 +64,7 @@ describe('Stellar module', () => {
     mainTimeout,
   );
 
-  test.skip(
+  test(
     'should isValidWalletAddress',
     async function () {
       const result = await StellarLib.isValidWalletAddress(testData.toWalletAddress);
@@ -83,19 +75,19 @@ describe('Stellar module', () => {
     mainTimeout * 3,
   );
 
-  test.skip(
+  test(
     'should sendTransaction',
     async function () {
-      const { toWalletAddress: to, network, amount, decimals, accountId, privateKey, tokenId } = testData;
+      const { toWalletAddress: to, network, amount, accountId, privateKey, assetCode, assetIssuer } = testData;
 
       const result = await StellarLib.sendTransaction({
         to,
         amount,
         network,
-        decimals,
         accountId,
         privateKey,
-        tokenId,
+        assetCode,
+        assetIssuer,
       });
 
       console.log({ result });
@@ -107,7 +99,7 @@ describe('Stellar module', () => {
     mainTimeout * 3,
   );
 
-  test.skip(
+  test(
     'should getTransaction',
     async function () {
       const { network } = testData;
