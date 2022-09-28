@@ -46,6 +46,7 @@ const keys = {
     'transactionHash',
     'transactionLink',
   ],
+  getfeeStatsResponse: ['feeCryptoCurrency', 'baseFee', 'maxFeeCharged', 'minFeeCharged', 'feeCharged'],
 };
 
 const runtime = { transactionHash: '' };
@@ -71,6 +72,17 @@ describe('Stellar module', () => {
 
       console.log({ result });
       expect(result).toBe(true);
+    },
+    mainTimeout * 3,
+  );
+
+  test(
+    'should getfeeStats',
+    async function () {
+      const result = await StellarLib.getFeeStats(testData.network);
+
+      console.log({ result });
+      expect(Object.keys(result)).toEqual(expect.arrayContaining(keys.getfeeStatsResponse));
     },
     mainTimeout * 3,
   );

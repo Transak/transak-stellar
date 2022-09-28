@@ -2,7 +2,13 @@ import axios from 'axios';
 import { networks } from './config';
 import { toDecimal } from './utils';
 import StellarSdk from 'stellar-sdk';
-import { Network, GetTransactionResult, SendTransactionResult, SendTransactionParams } from './types'; //
+import {
+  Network,
+  GetTransactionResult,
+  SendTransactionResult,
+  SendTransactionParams,
+  getfeeStatsResult,
+} from './types'; //
 
 /**
  * Get the network config
@@ -48,6 +54,26 @@ async function getClient(network: string): Promise<any> {
   const server = new StellarSdk.Server(config.serverUrl);
 
   return server;
+}
+
+/**
+ * Gets fee stats of last transacions from Horizen server
+ * @param network
+ * @returns
+ */
+async function getFeeStats(network: string): Promise<getfeeStatsResult> {
+  const config = getNetwork(network);
+  const server = new StellarSdk.Server(config.serverUrl);
+
+  const fee = await server.feeStats();
+
+  return {
+    feeCryptoCurrency: 'XLM',
+    baseFee: Number(toDecimal(fee.last_ledger_base_fee, 7)),
+    maxFeeCharged: Number(toDecimal(fee.max_fee.max, 7)),
+    minFeeCharged: Number(toDecimal(fee.max_fee.min, 7)),
+    feeCharged: Number(toDecimal(fee.fee_charged.p50, 7)),
+  };
 }
 
 /**
@@ -105,8 +131,8 @@ async function getTransaction(txnId: string, network: string): Promise<GetTransa
       receipt: {
         date: transactionData.created_at || null,
         gasCostCryptoCurrency: 'XLM',
-        gasCostInCrypto: +toDecimal(transactionData.fee_charged, 7),
-        gasLimit: +toDecimal(transactionData.max_fee, 7),
+        gasCostInCrypto: Number(toDecimal(transactionData.fee_charged, 7)),
+        gasLimit: Number(toDecimal(transactionData.max_fee, 7)),
         isPending: false,
         isExecuted: true,
         isSuccessful: !!transactionData.successful,
@@ -178,8 +204,8 @@ async function sendTransaction({
       date: transactionData.created_at || null,
       from: sourceKeys.publicKey(),
       gasCostCryptoCurrency: 'XLM',
-      gasCostInCrypto: +toDecimal(transactionData.fee_charged, 7),
-      gasLimit: +toDecimal(transactionData.max_fee, 7),
+      gasCostInCrypto: Number(toDecimal(transactionData.fee_charged, 7)),
+      gasLimit: Number(toDecimal(transactionData.max_fee, 7)),
       network,
       nonce: 0,
       to,
@@ -196,4 +222,5 @@ export = {
   isValidWalletAddress,
   sendTransaction,
   getBalance,
+  getFeeStats,
 };

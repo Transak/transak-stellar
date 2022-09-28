@@ -52,3 +52,11 @@ export type SendTransactionResult = {
     transactionLink: string;
   };
 };
+
+export type getfeeStatsResult = {
+  feeCryptoCurrency: string;
+  baseFee: number;
+  maxFeeCharged: number;
+  minFeeCharged: number;
+  feeCharged: number;
+};
