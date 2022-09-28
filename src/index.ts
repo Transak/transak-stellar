@@ -95,7 +95,7 @@ async function getBalance(
 
   const account = await server.loadAccount(accountId);
 
-  const selectedAsset = account.balances.find(function (asset: any) {
+  const selectedAsset = account.balances.find((asset: any) => {
     if (assetCode && assetIssuer && assetCode !== 'XLM') {
       return asset.asset_code === assetCode && asset.asset_issuer === assetIssuer;
     }
@@ -178,7 +178,7 @@ async function sendTransaction({
   const asset = assetCode && assetIssuer ? new StellarSdk.Asset(assetCode, assetIssuer) : StellarSdk.Asset.native();
 
   // if fee is not send use base fee for transaction
-  const transactionFee = fee ? toCrypto(fee,7) : StellarSdk.BASE_FEE;
+  const transactionFee = fee ? toCrypto(fee, 7) : StellarSdk.BASE_FEE;
   // Start building the transaction.
   const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
     fee: transactionFee,
@@ -187,7 +187,7 @@ async function sendTransaction({
     .addOperation(
       StellarSdk.Operation.payment({
         destination: to,
-        asset: asset,
+        asset,
         amount: amount.toString(),
       }),
     )
