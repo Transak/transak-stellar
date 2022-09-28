@@ -15,8 +15,8 @@ const testData = {
   network: process.env.NETWORK || '',
   amount: 1,
   decimals: 7,
-  assetCode: undefined ,// 'USDC', // undefined
-  assetIssuer: undefined  // 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5', // undefined
+  assetCode: 'USDC', // undefined
+  assetIssuer: 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5', // undefined
 };
 
 const keys = {
@@ -95,7 +95,30 @@ describe('Stellar module', () => {
   );
 
   test(
-    'should sendTransaction',
+    'should sendTransaction XLM',
+    async function () {
+      const { toWalletAddress: to, network, amount, accountId, privateKey } = testData;
+
+      const result = await StellarLib.sendTransaction({
+        to,
+        amount,
+        network,
+        accountId,
+        privateKey,
+      });
+
+      console.log({ result });
+
+      runtime.transactionHash = result.receipt.transactionHash;
+
+      expect(Object.keys(result.receipt)).toEqual(expect.arrayContaining(keys.sendTransactionResponse));
+    },
+    mainTimeout * 3,
+  );
+
+
+  test(
+    'should sendTransaction Asset USDC',
     async function () {
       const { toWalletAddress: to, network, amount, accountId, privateKey, assetCode, assetIssuer } = testData;
 
