@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { networks } from './config';
-import { toDecimal } from './utils';
+import { toDecimal, toCrypto } from './utils';
 import StellarSdk from 'stellar-sdk';
 import {
   Network,
@@ -70,9 +70,10 @@ async function getFeeStats(network: string): Promise<getfeeStatsResult> {
   return {
     feeCryptoCurrency: 'XLM',
     baseFee: Number(toDecimal(fee.last_ledger_base_fee, 7)),
+    lowFeeCharged: Number(toDecimal(fee.fee_charged.p10, 7)),
+    standardFeeCharged: Number(toDecimal(fee.fee_charged.p50, 7)),
+    fastFeeCharged: Number(toDecimal(fee.fee_charged.p99, 7)),
     maxFeeCharged: Number(toDecimal(fee.max_fee.max, 7)),
-    minFeeCharged: Number(toDecimal(fee.max_fee.min, 7)),
-    feeCharged: Number(toDecimal(fee.fee_charged.p50, 7)),
   };
 }
 
@@ -162,6 +163,7 @@ async function sendTransaction({
   privateKey,
   assetCode,
   assetIssuer,
+  fee, // in XLM
 }: SendTransactionParams): Promise<SendTransactionResult> {
   const server = await getClient(network);
   const config = getNetwork(network);
@@ -175,9 +177,11 @@ async function sendTransaction({
   // if assetCode is present set the Asset or XLM is transacted.
   const asset = assetCode && assetIssuer ? new StellarSdk.Asset(assetCode, assetIssuer) : StellarSdk.Asset.native();
 
+  // if fee is not send use base fee for transaction
+  const transactionFee = fee ? toCrypto(fee,7) : StellarSdk.BASE_FEE;
   // Start building the transaction.
   const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
-    fee: StellarSdk.BASE_FEE,
+    fee: transactionFee,
     networkPassphrase: StellarSdk.Networks[config.networkName], // PUBLIC ,TESTNET
   })
     .addOperation(

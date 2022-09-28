@@ -34,6 +34,7 @@ export type SendTransactionParams = {
   privateKey: string;
   assetCode?: string;
   assetIssuer?: string;
+  fee?: string
 };
 
 export type SendTransactionResult = {
@@ -56,7 +57,8 @@ export type SendTransactionResult = {
 export type getfeeStatsResult = {
   feeCryptoCurrency: string;
   baseFee: number;
+  lowFeeCharged: number;
+  standardFeeCharged: number;
+  fastFeeCharged: number;
   maxFeeCharged: number;
-  minFeeCharged: number;
-  feeCharged: number;
 };

@@ -15,8 +15,8 @@ const testData = {
   network: process.env.NETWORK || '',
   amount: 1,
   decimals: 7,
-  assetCode: 'USDC', // undefined
-  assetIssuer: 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5', // undefined
+  assetCode: undefined ,// 'USDC', // undefined
+  assetIssuer: undefined  // 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5', // undefined
 };
 
 const keys = {
@@ -46,7 +46,14 @@ const keys = {
     'transactionHash',
     'transactionLink',
   ],
-  getfeeStatsResponse: ['feeCryptoCurrency', 'baseFee', 'maxFeeCharged', 'minFeeCharged', 'feeCharged'],
+  getfeeStatsResponse: [
+    'feeCryptoCurrency',
+    'baseFee',
+    'lowFeeCharged',
+    'standardFeeCharged',
+    'fastFeeCharged',
+    'maxFeeCharged',
+  ],
 };
 
 const runtime = { transactionHash: '' };
