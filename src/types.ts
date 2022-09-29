@@ -34,7 +34,7 @@ export type SendTransactionParams = {
   privateKey: string;
   assetCode?: string;
   assetIssuer?: string;
-  fee?: string
+  fee?: string;
 };
 
 export type SendTransactionResult = {
