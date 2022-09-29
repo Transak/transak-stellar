@@ -67,12 +67,17 @@ async function getFeeStats(network: string): Promise<getfeeStatsResult> {
 
   const fee = await server.feeStats();
 
+  // set the maximum fee to 10000 st
+  const max10000 = (value: string): string => {
+    return Number(value) < 10000 ? value : '10000';
+  };
+
   return {
     feeCryptoCurrency: 'XLM',
     baseFee: Number(toDecimal(fee.last_ledger_base_fee, 7)),
-    lowFeeCharged: Number(toDecimal(fee.fee_charged.p10, 7)),
-    standardFeeCharged: Number(toDecimal(fee.fee_charged.p50, 7)),
-    fastFeeCharged: Number(toDecimal(fee.fee_charged.p99, 7)),
+    lowFeeCharged: Number(toDecimal(max10000(fee.fee_charged.p10), 7)),
+    standardFeeCharged: Number(toDecimal(max10000(fee.fee_charged.p50), 7)),
+    fastFeeCharged: Number(toDecimal(max10000(fee.fee_charged.p99), 7)),
     maxFeeCharged: Number(toDecimal(fee.max_fee.max, 7)),
   };
 }
@@ -152,6 +157,21 @@ async function getTransaction(txnId: string, network: string): Promise<GetTransa
 }
 
 /**
+ *
+ * @param network
+ * @returns
+ */
+async function getTransactionFee(network: string): Promise<number> {
+  // if fee is not present use base fee for transaction
+  try {
+    const fee = await getFeeStats(network);
+    return toCrypto(String(fee.fastFeeCharged), 7).toNumber();
+  } catch {
+    return StellarSdk.BASE_FEE;
+  }
+}
+
+/**
  * Send the transaction to the Hedera network
  * @param param0
  * @returns
@@ -163,7 +183,6 @@ async function sendTransaction({
   privateKey,
   assetCode,
   assetIssuer,
-  fee, // in XLM
 }: SendTransactionParams): Promise<SendTransactionResult> {
   const server = await getClient(network);
   const config = getNetwork(network);
@@ -177,8 +196,7 @@ async function sendTransaction({
   // if assetCode is present set the Asset or XLM is transacted.
   const asset = assetCode && assetIssuer ? new StellarSdk.Asset(assetCode, assetIssuer) : StellarSdk.Asset.native();
 
-  // if fee is not send use base fee for transaction
-  const transactionFee = fee ? toCrypto(fee, 7) : StellarSdk.BASE_FEE;
+  const transactionFee = await getTransactionFee(network);
   // Start building the transaction.
   const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
     fee: transactionFee,
