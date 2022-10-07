@@ -210,7 +210,7 @@ async function sendTransaction({
         amount: amount.toString(),
       }),
     )
-    .setTimeout(20); // Wait a maximum of 20 sec for the transaction
+    .setTimeout(180); // Wait a maximum of 20 sec for the transaction
 
   if (memo) transaction.addMemo(StellarSdk.Memo.text(memo));
 
