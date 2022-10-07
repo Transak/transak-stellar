@@ -17,6 +17,7 @@ const testData = {
   decimals: 7,
   assetCode: 'USDC', // undefined
   assetIssuer: 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5', // undefined
+  memo:"test memo",
 };
 
 const keys = {
@@ -97,14 +98,14 @@ describe('Stellar module', () => {
   test(
     'should sendTransaction XLM',
     async function () {
-      const { toWalletAddress: to, network, amount, accountId, privateKey } = testData;
+      const { toWalletAddress: to, network, amount, privateKey , memo} = testData;
 
       const result = await StellarLib.sendTransaction({
         to,
         amount,
         network,
-        accountId,
         privateKey,
+        memo,
       });
 
       console.log({ result });
@@ -117,19 +118,19 @@ describe('Stellar module', () => {
   );
 
 
-  test(
+  test.skip(
     'should sendTransaction Asset USDC',
     async function () {
-      const { toWalletAddress: to, network, amount, accountId, privateKey, assetCode, assetIssuer } = testData;
+      const { toWalletAddress: to, network, amount, privateKey, assetCode, assetIssuer } = testData;
 
       const result = await StellarLib.sendTransaction({
         to,
         amount,
         network,
-        accountId,
         privateKey,
         assetCode,
         assetIssuer,
+        
       });
 
       console.log({ result });

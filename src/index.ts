@@ -183,6 +183,7 @@ async function sendTransaction({
   privateKey,
   assetCode,
   assetIssuer,
+  memo,
 }: SendTransactionParams): Promise<SendTransactionResult> {
   const server = await getClient(network);
   const config = getNetwork(network);
@@ -209,15 +210,21 @@ async function sendTransaction({
         amount: amount.toString(),
       }),
     )
-    .addMemo(StellarSdk.Memo.text('Transaction by Transak'))
-    .setTimeout(180) // Wait a maximum of three minutes for the transaction
-    .build();
+    .setTimeout(20); // Wait a maximum of 20 sec for the transaction
+
+
+
+  if (memo) transaction.addMemo(StellarSdk.Memo.text(memo));
+
+  const buildTransaction = transaction.build();
 
   // Sign the transaction to prove you are actually the person sending it.
-  transaction.sign(sourceKeys);
+  buildTransaction.sign(sourceKeys);
+
+
 
   // And finally, send it off to Stellar!
-  const transactionData = await server.submitTransaction(transaction);
+  const transactionData = await server.submitTransaction(buildTransaction);
 
   return {
     transactionData,

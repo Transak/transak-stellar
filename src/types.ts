@@ -30,11 +30,11 @@ export type SendTransactionParams = {
   to: string; // to wallet address
   amount: number;
   network: string;
-  accountId: string;
+  // accountId: string;
   privateKey: string;
   assetCode?: string;
   assetIssuer?: string;
-  fee?: string;
+  memo?: string;
 };
 
 export type SendTransactionResult = {
