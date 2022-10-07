@@ -113,6 +113,35 @@ async function getBalance(
 }
 
 /**
+ * Gets token trusted by account
+ * @param network
+ * @param accountId
+ * @param assetCode
+ * @param assetIssuer
+ * @returns
+ */
+async function isTokenTrusted(
+  network: string,
+  accountId: string,
+  assetCode?: string,
+  assetIssuer?: string,
+): Promise<boolean> {
+  const server = await getClient(network);
+
+  //  XLM trusted by default by all accounts
+  if (assetCode === 'XLM') return true;
+
+  const account = await server.loadAccount(accountId);
+
+  // will return undefined if token is not associated
+  const selectedAsset = account.balances.find(
+    (asset: any) => asset.asset_code === assetCode && asset.asset_issuer === assetIssuer,
+  );
+
+  return !!selectedAsset;
+}
+
+/**
  * Get the transaction details by transaction id
  * @param txnId
  * @param network
@@ -248,4 +277,5 @@ export = {
   sendTransaction,
   getBalance,
   getFeeStats,
+  isTokenTrusted,
 };

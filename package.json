@@ -20,8 +20,7 @@
     "prepare": "npm run build",
     "prepublishOnly": "npm run lint",
     "preversion": "npm run lint",
-    "version": "npm run format && git add -A src",
-    "postinstall": "echo \"post install\" && cd node_modules/sodium-native && npm run dev"
+    "version": "npm run format && git add -A src"
   },
   "keywords": [],
   "author": "",
