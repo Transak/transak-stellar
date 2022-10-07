@@ -212,16 +212,12 @@ async function sendTransaction({
     )
     .setTimeout(20); // Wait a maximum of 20 sec for the transaction
 
-
-
   if (memo) transaction.addMemo(StellarSdk.Memo.text(memo));
 
   const buildTransaction = transaction.build();
 
   // Sign the transaction to prove you are actually the person sending it.
   buildTransaction.sign(sourceKeys);
-
-
 
   // And finally, send it off to Stellar!
   const transactionData = await server.submitTransaction(buildTransaction);
